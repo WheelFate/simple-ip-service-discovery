@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service A</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Service A</h1>
+    <p>This page represents "ServiceA" in our simulated service discovery.</p>
+    <h2>My Registered Info (from registry.json)</h2>
+    <pre id="serviceInfo"></pre>
+
+    <script>
+        // Using your specific GitHub Pages URL
+        const registryUrl = 'https://wheelfate.github.io/simple-ip-service-discovery/registry.json';
+        const serviceName = 'ServiceA';
+
+        fetch(registryUrl)
+            .then(response => response.json())
+            .then(data => {
+                const service = data.services.find(s => s.name === serviceName);
+                if (service) {
+                    document.getElementById('serviceInfo').textContent = JSON.stringify(service, null, 2);
+                } else {
+                    document.getElementById('serviceInfo').textContent = 'ServiceA not found in registry.';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching service registry:', error);
+                document.getElementById('serviceInfo').textContent = 'Error loading service info.';
+            });
+    </script>
+</body>
+</html>
