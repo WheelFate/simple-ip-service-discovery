@@ -23,11 +23,41 @@
         .service-card h3 a:hover {
             text-decoration: underline;
         }
+        /* Style for search input and buttons */
+        input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 15px;
+            margin-left: 10px;
+            background-color: #28a745; /* Green for Search */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:nth-of-type(2) { /* Style for the second button (Reset) */
+            background-color: #6c757d; /* Gray for Reset */
+        }
     </style>
 </head>
 <body>
     <h1>Service Discovery Client</h1>
     <p>This page simulates a client application looking up available services.</p>
+
+    <div style="margin-bottom: 20px;">
+        <input type="text" id="serviceSearch" placeholder="Search services by name or description...">
+        <button onclick="filterServices()">Search</button>
+        <button onclick="resetFilter()">Reset</button>
+    </div>
+
     <h2>Discovered Services:</h2>
     <div id="servicesList">
         <p>Loading services...</p>
@@ -37,38 +67,71 @@
         // Your GitHub Pages URL for the registry.json file
         const registryUrl = 'https://wheelfate.github.io/simple-ip-service-discovery/registry.json';
 
+        let allServices = []; // This will store the full list of services once fetched
+
+        // Fetch services when the page loads
         fetch(registryUrl)
             .then(response => response.json())
             .then(data => {
-                const servicesList = document.getElementById('servicesList');
-                servicesList.innerHTML = ''; // Clear "Loading services..."
-
-                if (data.services && data.services.length > 0) {
-                    data.services.forEach(service => {
-                        const serviceCard = document.createElement('div');
-                        serviceCard.classList.add('service-card');
-
-                        // Dynamically create the link to the service's individual page
-                        // This assumes your service pages are named service_a.html, service_b.html, etc.
-                        const servicePageFileName = `service_${service.name.toLowerCase().slice(-1)}.html`;
-                        const servicePageUrl = `https://wheelfate.github.io/simple-ip-service-discovery/${servicePageFileName}`;
-
-                        serviceCard.innerHTML = `
-                            <h3><a href="${servicePageUrl}">${service.name}</a></h3>
-                            <p><strong>IP Address:</strong> ${service.ip_address}</p>
-                            <p><strong>Port:</strong> ${service.port}</p>
-                            <p><strong>Description:</strong> ${service.description}</p>
-                        `;
-                        servicesList.appendChild(serviceCard);
-                    });
-                } else {
-                    servicesList.textContent = 'No services found in the registry.';
-                }
+                allServices = data.services; // Store all services globally
+                renderServices(allServices); // Initial rendering of all services
             })
             .catch(error => {
                 console.error('Error fetching service registry:', error);
                 document.getElementById('servicesList').textContent = 'Error loading services.';
             });
+
+        // Function to render services to the DOM
+        function renderServices(servicesToRender) {
+            const servicesList = document.getElementById('servicesList');
+            servicesList.innerHTML = ''; // Clear existing content
+
+            if (servicesToRender && servicesToRender.length > 0) {
+                servicesToRender.forEach(service => {
+                    const serviceCard = document.createElement('div');
+                    serviceCard.classList.add('service-card');
+
+                    // Dynamically create the link to the service's individual page
+                    // This assumes your service pages are named service_a.html, service_b.html, etc.
+                    const servicePageFileName = `service_${service.name.toLowerCase().slice(-1)}.html`;
+                    const servicePageUrl = `https://wheelfate.github.io/simple-ip-service-discovery/${servicePageFileName}`;
+
+                    serviceCard.innerHTML = `
+                        <h3><a href="${servicePageUrl}">${service.name}</a></h3>
+                        <p><strong>IP Address:</strong> ${service.ip_address}</p>
+                        <p><strong>Port:</strong> ${service.port}</p>
+                        <p><strong>Description:</strong> ${service.description}</p>
+                    `;
+                    servicesList.appendChild(serviceCard);
+                });
+            } else {
+                servicesList.textContent = 'No services found matching your criteria.';
+            }
+        }
+
+        // Function to filter services based on search input
+        function filterServices() {
+            const searchTerm = document.getElementById('serviceSearch').value.toLowerCase();
+            const filtered = allServices.filter(service =>
+                service.name.toLowerCase().includes(searchTerm) ||
+                service.description.toLowerCase().includes(searchTerm) // Allows searching by description too
+            );
+            renderServices(filtered);
+        }
+
+        // Function to reset the filter and display all services
+        function resetFilter() {
+            document.getElementById('serviceSearch').value = ''; // Clear the search input
+            renderServices(allServices); // Render all services again
+        }
+
+        // Optional: Allow filtering on 'Enter' key press in the search box
+        document.getElementById('serviceSearch').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                filterServices();
+            }
+        });
+
     </script>
 </body>
 </html>
