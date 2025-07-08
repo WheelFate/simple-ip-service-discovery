@@ -6,14 +6,33 @@
     <title>Service A</title>
     <style>
         body { font-family: sans-serif; margin: 20px; }
-        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; }
+        .service-details {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .service-details.status-down {
+            background-color: #ffecec; /* Light red background for "down" */
+            border-color: #ffcccc;
+        }
+        .service-details p { margin: 5px 0; }
+        .back-link { margin-top: 20px; display: block; }
+        .status-up { color: green; font-weight: bold; }
+        .status-down { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>Service A</h1>
     <p>This page represents "ServiceA" in our simulated service discovery.</p>
+
     <h2>My Registered Info (from registry.json)</h2>
-    <pre id="serviceInfo"></pre>
+    <div id="serviceInfo" class="service-details">
+        <p>Loading service info...</p>
+    </div>
+
+    <a href="https://wheelfate.github.io/simple-ip-service-discovery/" class="back-link">← Back to Service Discovery Client</a>
 
     <script>
         // Using your specific GitHub Pages URL
@@ -24,10 +43,21 @@
             .then(response => response.json())
             .then(data => {
                 const service = data.services.find(s => s.name === serviceName);
+                const serviceInfoDiv = document.getElementById('serviceInfo');
+
                 if (service) {
-                    document.getElementById('serviceInfo').textContent = JSON.stringify(service, null, 2);
+                    serviceInfoDiv.innerHTML = `
+                        <p><strong>Name:</strong> ${service.name}</p>
+                        <p><strong>IP Address:</strong> ${service.ip_address}</p>
+                        <p><strong>Port:</strong> ${service.port}</p>
+                        <p><strong>Description:</strong> ${service.description}</p>
+                        <p><strong>Status:</strong> <span class="status-${service.status}">${service.status.toUpperCase()}</span></p>
+                    `;
+                    if (service.status === 'down') {
+                        serviceInfoDiv.classList.add('status-down');
+                    }
                 } else {
-                    document.getElementById('serviceInfo').textContent = 'ServiceA not found in registry.';
+                    serviceInfoDiv.textContent = 'ServiceA not found in registry.';
                 }
             })
             .catch(error => {
