@@ -13,6 +13,10 @@
             border-radius: 5px;
             background-color: #f9f9f9;
         }
+        .service-card.status-down { /* Style for services marked as 'down' */
+            background-color: #ffecec; /* Light red background */
+            border-color: #ffcccc;
+        }
         .service-card h3 { margin-top: 0; }
         .service-card p { margin: 5px 0; }
         /* Basic styling for links */
@@ -91,6 +95,11 @@
                     const serviceCard = document.createElement('div');
                     serviceCard.classList.add('service-card');
 
+                    // Add a class for 'down' status for specific CSS styling
+                    if (service.status === 'down') {
+                        serviceCard.classList.add('status-down');
+                    }
+
                     // Dynamically create the link to the service's individual page
                     // This assumes your service pages are named service_a.html, service_b.html, etc.
                     const servicePageFileName = `service_${service.name.toLowerCase().slice(-1)}.html`;
@@ -101,6 +110,7 @@
                         <p><strong>IP Address:</strong> ${service.ip_address}</p>
                         <p><strong>Port:</strong> ${service.port}</p>
                         <p><strong>Description:</strong> ${service.description}</p>
+                        <p><strong>Status:</strong> <span style="color: ${service.status === 'up' ? 'green' : 'red'}; font-weight: bold;">${service.status.toUpperCase()}</span></p>
                     `;
                     servicesList.appendChild(serviceCard);
                 });
