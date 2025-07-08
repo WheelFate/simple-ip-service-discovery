@@ -4,19 +4,22 @@
       "name": "ServiceA",
       "ip_address": "192.168.1.100",
       "port": 8080,
-      "description": "Handles user authentication"
+      "description": "Handles user authentication",
+      "status": "up"  
     },
     {
       "name": "ServiceB",
       "ip_address": "192.168.1.101",
       "port": 3000,
-      "description": "Manages product catalog"
+      "description": "Manages product catalog",
+      "status": "up" 
     },
     {
       "name": "ServiceC",
       "ip_address": "192.168.1.102",
       "port": 5000,
-      "description": "Processes orders"
+      "description": "Processes orders",
+      "status": "up" 
     }
   ]
 }
